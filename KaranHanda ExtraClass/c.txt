@@ -1,0 +1,1 @@
+ this is simran and my file has a lot of extra spaces i hope after function implementation these spaces can be removed
