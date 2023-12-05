@@ -36,7 +36,7 @@
    Input: Headers: { 'username': 'admin', 'password': 'pass' }
    Output: { courses: [ { id: 1, title: 'course title', description: 'course description', price: 100, imageLink: 'https://linktoimage.com', published: true }, ... ] }
    User Routes:
-
+x
 ### User routes
  - POST /users/signup
    Description: Creates a new user account.

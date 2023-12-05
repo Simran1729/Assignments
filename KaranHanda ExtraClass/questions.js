@@ -118,6 +118,77 @@ const fs = require("fs");
 
 
 // ----> Question 7
+
+// ---using async/await
+// function dataCleaner(mess) {
+//     const arr = [];
+//     const dataArr = mess.split(" ");
+//     for (let i = 0; i < dataArr.length; i++) {
+//         if (dataArr[i] != '') {
+//             arr.push(dataArr[i])
+//         }
+//     }
+//     const ansStr = arr.join(" ")
+//     return ansStr;
+// }
+
+// function readFileAsync(filePath) {
+//     return new Promise((resolve, reject) => {
+//         fs.readFile(filePath, 'utf8', (err, data) => {
+//             if (err) {
+//                 reject(`Error reading ${filePath}`);
+//             } else {
+//                 resolve(data);
+//             }
+//         });
+//     });
+// }
+
+// function writeFileAsync(filePath, data) {
+//     return new Promise((resolve, reject) => {
+//         fs.writeFile(filePath, data, 'utf8', (err) => {
+//             if (err) {
+//                 reject(`Error writing to ${filePath}`);
+//             } else {
+//                 resolve();
+//             }
+//         });
+//     });
+// }
+
+// async function series() {
+//     try {
+//         let aData = await readFileAsync('a.txt');
+//         console.log("1: contents of a.txt read successfully!");
+
+//         // Perform operations on aData
+
+//         await writeFileAsync('b.txt', aData);
+//         console.log("2: contents of a.txt written in b.txt successfully!");
+
+//         await writeFileAsync('c.txt', aData);
+//         console.log("3: contents of a.txt written in c.txt successfully!");
+
+//         const cleanData = dataCleaner(aData);
+//         await writeFileAsync('a.txt', cleanData);
+//         console.log("4: a.txt cleaned successfully!");
+
+//         const delData = "this is new data";
+//         await writeFileAsync('a.txt', delData);
+//         console.log("5: the contents of a.txt have been deleted successfully!");
+
+//         await writeFileAsync('b.txt', delData);
+//         console.log("6: the contents of b.txt have been deleted successfully!");
+//     } catch (error) {
+//         console.error(error);
+//     }
+// }
+
+// series();
+
+
+// --- using promise chaining
+
 function dataCleaner(mess) {
     const arr = [];
     const dataArr = mess.split(" ");
@@ -130,70 +201,63 @@ function dataCleaner(mess) {
     return ansStr;
 }
 
-function series() {
-    let aData = " ";
-    fs.readFile('a.txt', "utf8", (err, data) => {
-        if (err) {
-            throw new Error("a.txt file read error!")
-        }
-        else {
-            aData += data;
-            console.log("1 : contents of a.txt read successfully!")
-        }
-    })
-
-    setTimeout(() => {
-        fs.writeFile('b.txt', aData, 'utf8', (err) => {
+function readFileAsync(filePath) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, 'utf8', (err, data) => {
             if (err) {
-                throw new Error("b.txt write error!")
-            }
-            else {
-                console.log("2: contents of a.txt written in b.txt successfully!")
-            }
-        })
-        fs.writeFile('c.txt', aData, 'utf8', (err) => {
-            if (err) {
-                throw new Error("b.txt write error!")
-            }
-            else {
-                console.log("3: contents of a.txt written in c.txt successfully!")
-            }
-        })
-
-        const cleanData = dataCleaner(aData);
-        fs.writeFile('a.txt', cleanData, 'utf8', (err) => {
-            if (err) {
-                throw new Error('error cleaning the contents of file!')
-            }
-            else {
-                console.log("4: a.txt cleaned successfully!")
+                reject(`Error reading ${filePath}`);
+            } else {
+                resolve(data);
             }
         });
-
-
-        const delData = "this is new data";
-
-        fs.writeFile('a.txt', delData, 'utf8', (err) => {
-            if (err) {
-                throw new Error("error deleting contents of a.txt")
-            }
-            else {
-                console.log("5: the contents of a.txt has been deleted succesfully!")
-            }
-        })
-
-        fs.writeFile('b.txt', delData, 'utf8', (err) => {
-            if (err) {
-                throw new Error("error deleting contents of b.txt")
-            }
-            else {
-                console.log("6: the contents of b.txt has been deleted succesfully!")
-            }
-        })
-    }, 3000)
+    });
 }
-series();
 
+function writeFileAsync(filePath, data) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(filePath, data, 'utf8', (err) => {
+            if (err) {
+                reject(`Error writing to ${filePath}`);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
 
+readFileAsync('a.txt')
+    .then((aData) => {
+        console.log("1: contents of a.txt read successfully!");
+        return aData;
+    })
+    .then((aData) => {
+        // Perform operations on aData
+
+        return writeFileAsync('b.txt', aData);
+    })
+    .then(() => {
+        console.log("2: contents of a.txt written in b.txt successfully!");
+        return writeFileAsync('c.txt', aData);
+    })
+    .then(() => {
+        console.log("3: contents of a.txt written in c.txt successfully!");
+        const cleanData = dataCleaner(aData);
+        return writeFileAsync('a.txt', cleanData);
+    })
+    .then(() => {
+        console.log("4: a.txt cleaned successfully!");
+        const delData = "this is new data";
+        return writeFileAsync('a.txt', delData);
+    })
+    .then(() => {
+        console.log("5: the contents of a.txt have been deleted successfully!");
+        return writeFileAsync('b.txt', delData);
+    })
+    .then(() => {
+        console.log("6: the contents of b.txt have been deleted successfully!");
+    })
+    .catch((error) => {
+        console.error(error);
+    });
 
 

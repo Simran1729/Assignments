@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO APP</title>
+</head>
+
+<body>
+    Todo Title
+    <input type="text" id="title"></input>
+    <br><br>
+    Todo Description
+    <input type="text" id="description"></input>
+    <br><br>
+    <button onclick="onPress()">send todo</button>
+    <div id="mainArea"></div>
+    <script>
+
+        function deleteTodo(id) {
+            console.log(id);
+
+            // TASK IS TO DELETE THE TODO DYNAMICALLY
+            // NOW WHAT WE NEED IS TO FIGURE OUT HOW TO REMOVE IT FROM THE 
+            // WEBPAGE THE MOMENT YOU PRESS DELETE AND NOT WHEN YOU REFRESH
+
+            fetch("http://localhost:3000/todos/" + id, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(() => {
+                console.log("deleted done")
+            })
+        }
+
+        function getData() {
+            fetch("http://localhost:3000/todos", {
+                method: "GET",
+            })
+                .then((resp) => resp.json())
+                .then((data) => {
+                    console.log(data);
+                    var parentElement = document.getElementById("mainArea");
+                    for (let i = 0; i < data.length; i++) {
+                        var childElement = document.createElement("div")
+
+                        var grandChild1 = document.createElement("span");
+                        grandChild1.innerHTML = data[i].title;
+
+                        var grandChild2 = document.createElement("span");
+                        grandChild2.innerHTML = data[i].description;
+
+                        var grandChild3 = document.createElement("button");
+                        grandChild3.innerHTML = "DELETE";
+                        grandChild3.setAttribute("onclick", "deleteTodo(" + data[i].id + ")");
+
+                        childElement.appendChild(grandChild1);
+                        childElement.appendChild(grandChild2);
+                        childElement.appendChild(grandChild3);
+
+                        parentElement.appendChild(childElement)
+                    }
+                    // parentElement.innerHTML = JSON.stringify(data); --> this just inserts the whole json array object onto the webpage
+                })
+
+        }
+        getData(); // this will call the function the moment your page is refreshed
+
+
+        function onPress() {
+            fetch("http://localhost:3000/todos", {
+                method: "POST",
+                body: JSON.stringify({
+                    title: document.querySelector('#title').value,
+                    description: document.querySelector('#description').value
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+
+            })
+                .then((resp) => resp.json())
+                .then((data) => {
+                    console.log(data);
+                    var parentElement = document.getElementById("mainArea");
+                    var childElement = document.createElement("div");
+
+                    var grandChild1 = document.createElement("span");
+                    grandChild1.innerHTML = data.title;
+
+                    var grandChild2 = document.createElement("span");
+                    grandChild2.innerHTML = data.description;
+
+                    var grandChild3 = document.createElement("button");
+                    grandChild3.innerHTML = "DELETE";
+
+                    childElement.appendChild(grandChild1);
+                    childElement.appendChild(grandChild2);
+                    childElement.appendChild(grandChild3);
+
+                    parentElement.appendChild(childElement);
+                })
+        }
+    </script>
+
+
+</body>
+
+</html>
